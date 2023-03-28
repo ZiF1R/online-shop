@@ -8,9 +8,10 @@
       <ul class="profile-tabs">
         <li class="tab tab_group-end">
           <router-link to="/profile">
-            <IconProfile />
+            <IconProfile color="#000" />
             <span>Личные данные</span>
           </router-link>
+          <hr>
         </li>
         <li class="tab">
           <router-link to="/cart">
@@ -18,26 +19,27 @@
             <span>Корзина</span>
           </router-link>
         </li>
-        <li class="tab">
-          <router-link to="/profile/favourites">
-            <IconStar />
-            <span>Избранные товары</span>
-          </router-link>
-        </li>
+<!--        <li class="tab">-->
+<!--          <router-link to="/profile/favourites">-->
+<!--            <IconStar />-->
+<!--            <span>Избранные товары</span>-->
+<!--          </router-link>-->
+<!--        </li>-->
         <li class="tab">
           <router-link to="/profile/watched">
             <IconEye />
             <span>Просмотренные товары</span>
           </router-link>
+          <hr>
         </li>
-        <li class="tab tab_group-end">
-          <router-link to="/profile/orders">
-            <IconBook />
-            <span>История заказов</span>
-          </router-link>
-        </li>
+<!--        <li class="tab tab_group-end">-->
+<!--          <router-link to="/profile/orders">-->
+<!--            <IconBook />-->
+<!--            <span>История заказов</span>-->
+<!--          </router-link>-->
+<!--        </li>-->
         <li class="tab">
-          <div @click="user.resetUser()">
+          <div @click="logout">
             <IconLogout />
             <span>Выход</span>
           </div>
@@ -56,8 +58,15 @@ import IconStar from "components/Icons/IconStar.vue";
 import IconEye from "components/Icons/IconEye.vue";
 import IconBook from "components/Icons/IconBook.vue";
 import IconLogout from "components/Icons/IconLogout.vue";
+import {useRouter} from "vue-router";
 
 const user = useUserStore();
+const router = useRouter();
+
+function logout() {
+  user.resetUser();
+  router.push({path: "/"});
+}
 </script>
 
 <style scoped>
@@ -77,8 +86,24 @@ const user = useUserStore();
 li a, li div {
   display: flex;
   gap: 10px;
-  margin: 10px 0;
+  margin: 7px 0;
   cursor: pointer;
+  align-items: center;
+  color: var(--color-text);
+  padding: 3px 10px;
+}
+
+li a:hover {
+  background: var(--color-primary-blind);
+}
+
+li div {
+  color: var(--color-danger);
+  transition: .31s;
+}
+
+li div:hover {
+  background: var(--color-danger-blind);
 }
 
 li svg {

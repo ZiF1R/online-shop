@@ -28,6 +28,31 @@
     public static function deleteCategory(array $req, array $res): array {
       $id = $req["params"]["id"];
 
+      $category = QueryBuilder::table("Categories")
+        ->where("id", "=", $id)
+        ->get()[0];
+
+      QueryBuilder::table("Properties")
+        ->where("category_id", "=", $category["id"])
+        ->delete();
+
+      $products = QueryBuilder::table("Products")
+        ->where("category_id", "=", $category["id"])
+        ->get();
+
+      foreach ($products as $product) {
+        QueryBuilder::table("Product_property_values")
+          ->where("product_code", "=", $product["code"])
+          ->delete();
+        QueryBuilder::table("Visited_products")
+          ->where("product_code", "=", $product["code"])
+          ->delete();
+      }
+
+      QueryBuilder::table("Products")
+        ->where("category_id", "=", $category["id"])
+        ->delete();
+
       QueryBuilder::table("Categories")
         ->where("id", "=", $id)
         ->delete();

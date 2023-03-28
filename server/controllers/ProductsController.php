@@ -59,6 +59,10 @@
         ->where("product_code", "=", $code)
         ->delete();
 
+      QueryBuilder::table("Visited_products")
+        ->where("product_code", "=", $code)
+        ->delete();
+
       QueryBuilder::table("Products")
         ->where("code", "=", $code)
         ->delete();

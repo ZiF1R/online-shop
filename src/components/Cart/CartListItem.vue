@@ -89,6 +89,7 @@ img {
 .button_danger {
   display: flex;
   align-items: center;
+  padding: 7px 30px;
   gap: 10px;
 }
 

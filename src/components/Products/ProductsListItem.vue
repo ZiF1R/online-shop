@@ -6,7 +6,7 @@
         <h2>
           <router-link :to="link">{{item.name}}</router-link>
         </h2>
-        <ProductPropertiesList v-if="item?.properties" :properties="item.properties" />
+        <ProductPropertiesList v-if="item?.properties" :properties="item.properties" :limit="5" />
       </div>
     </div>
     <div class="item__other-info">
@@ -24,6 +24,10 @@
       <router-link v-else to="/cart" class="link_secondary">
         В корзине
       </router-link>
+      <button v-if="remove" class="button_danger" @click="emit('onItemRemove', item)">
+        Удалить
+        <IconTrash color="#fff" />
+      </button>
     </div>
   </li>
 </template>
@@ -35,7 +39,17 @@ import IconStar from "components/Icons/IconStar.vue";
 import ProductPropertiesList from "components/Products/ProductPropertiesList.vue";
 import {useCartStore} from "stores/cart";
 import {useUserStore} from "stores/user";
-const props = defineProps<{item: Product}>();
+import IconTrash from "components/Icons/IconTrash.vue";
+
+const props = defineProps({
+  item: Object,
+  remove: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+});
+const emit = defineEmits(["onItemRemove"]);
 
 const user = useUserStore();
 const cart = useCartStore();
@@ -53,6 +67,14 @@ h2 {
 img {
   height: fit-content;
   width: 130px;
+}
+
+.link_secondary {
+  text-align: center;
+}
+
+.item__stats {
+  margin-bottom: 15px;
 }
 
 .item {
@@ -96,5 +118,14 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.button_danger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 7px 30px;
+  border: none;
 }
 </style>

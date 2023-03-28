@@ -25,8 +25,11 @@ export const useCartStore = defineStore("cart", () => {
       const codes = JSON.parse(localStorageCart);
       for (const code of codes) {
         const product = await getProduct(+code);
-        cart.value.push(product);
+        if (product) {
+          cart.value.push(product);
+        }
       }
+      saveToLocalStorage();
     }
   });
 

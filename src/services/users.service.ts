@@ -18,5 +18,5 @@ export const createUser = async (data: User) => {
 
 export const changeUserData = async (data: User) => {
   const response = await axios.post(`/users/${data.id}`, JSON.stringify(data));
-  return response.data?.user;
+  return response.data;
 }

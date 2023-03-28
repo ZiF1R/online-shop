@@ -34,6 +34,11 @@ const router = createRouter({
           name: "PersonalData",
           component: () => import("views/profile/PersonalData.vue"),
         },
+        {
+          path: "watched",
+          name: "WatchedProducts",
+          component: () => import("views/profile/WatchedProducts.vue"),
+        },
       ],
     },
     {

@@ -58,6 +58,5 @@ export const createProduct = async (data: Product) => {
 
 export const deleteProduct = async (code: number) => {
   const response = await axios.delete(`/products/${code}`);
-  console.log(response.data)
   return response.data;
 }

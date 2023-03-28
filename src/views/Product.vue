@@ -18,6 +18,15 @@
           <span class="product__price">
             {{product.price}} <small>p.</small>
           </span>
+          <span class="product__in-stock">
+            {{+product.count > 0 ? "В наличии: ✔" : "Нет в наличии: ✖"}}
+          </span>
+          <button v-if="!cart.isInCart(product)" class="to-cart" @click="cart.addToCart(product)">
+            В корзину
+          </button>
+          <router-link v-else to="/cart" class="to-cart link_secondary">
+            В корзине
+          </router-link>
         </div>
       </div>
     </div>
@@ -56,7 +65,8 @@
             <option v-for="n in 5" :value="n" :key="n">{{n}}</option>
           </select>
         </label>
-        <textarea v-model="feedback.comment" placeholder="Ваш комментарий"></textarea>
+        <textarea v-model.trim="feedback.comment" placeholder="Ваш комментарий"></textarea>
+        <span class="error">{{errorMessage}}</span>
       </template>
     <template #buttons>
       <button @click="sendFeedback">Отправить</button>
@@ -74,7 +84,10 @@ import type {Feedback, Product} from "types/main.types";
 import AppModal from "components/AppModal.vue";
 import {useUserStore} from "stores/user";
 import ProductRatingTotal from "components/Products/ProductRatingTotal.vue";
+import {sendWatchInfo} from "services/watched-products.service";
+import {useCartStore} from "stores/cart";
 
+const cart = useCartStore();
 const user = useUserStore();
 const product = ref<Product|{}>({});
 const alreadySendFeedback = computed(() => {
@@ -87,9 +100,13 @@ const feedback = ref({
   comment: "",
   reply_comment_id: null,
 });
+const errorMessage = ref("");
 
 onMounted(async () => {
   await fetchProduct();
+  if (user.isAuthorized) {
+    await sendWatchInfo(+user.getUser().id, +product.value.code);
+  }
 });
 
 function resetFeedbackData() {
@@ -97,7 +114,7 @@ function resetFeedbackData() {
     rating: 1,
     comment: "",
     reply_comment_id: null,
-  }
+  };
 }
 
 async function fetchProduct() {
@@ -105,11 +122,17 @@ async function fetchProduct() {
 }
 
 async function sendFeedback() {
+  if (feedback.value.comment === "") {
+    errorMessage.value = "Необходимо заполнить поле с сообщением";
+    return;
+  }
+
   feedback.value.product_code = product.value.code;
   await sendRating(user.getUser().id, feedback.value);
   openModal.value = false;
   resetFeedbackData();
   await fetchProduct();
+  errorMessage.value = "";
 }
 
 async function sendReply(id) {
@@ -124,6 +147,10 @@ async function removeFeedback(item) {
 </script>
 
 <style scoped>
+.to-cart {
+  margin-top: 20px;
+}
+
 .product__content {
   display: flex;
   flex-direction: row-reverse;
@@ -177,6 +204,21 @@ hr {
   max-width: 100%;
 }
 
+.product__stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 15px;
+}
+
+.product__price {
+  font-size: 28px;
+}
+
+.product__price > small {
+  font-size: 16px;
+}
+
 h1 {
   margin-bottom: 30px;
 }
@@ -213,5 +255,9 @@ textarea {
 
 .modal__header {
   margin-bottom: 0;
+}
+
+.error {
+  color: coral;
 }
 </style>

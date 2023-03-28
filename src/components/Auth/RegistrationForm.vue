@@ -5,10 +5,10 @@
     </template>
     <template #content>
       <form @submit.prevent="registrate">
-        <CustomInput type="text" placeholder="Имя" v-model="formData.name" required />
-        <CustomInput type="email" placeholder="Почта" v-model="formData.email" required />
-        <CustomInput type="password" placeholder="Пароль" v-model="formData.password" required />
-        <CustomInput type="password" placeholder="Повторите пароль" v-model="formData.repeatPassword" required />
+        <CustomInput type="text" placeholder="Имя" v-model.trim="formData.name" required />
+        <CustomInput type="email" placeholder="Почта" v-model.trim="formData.email" required />
+        <CustomInput type="password" placeholder="Пароль" v-model.trim="formData.password" required />
+        <CustomInput type="password" placeholder="Повторите пароль" v-model.trim="formData.repeatPassword" required />
         <span class="error">{{errorMessage}}</span>
 
         <button type="submit">Зарегистрироваться</button>

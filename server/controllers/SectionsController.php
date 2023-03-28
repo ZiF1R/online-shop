@@ -48,13 +48,44 @@
     public static function deleteSection(array $req, array $res): array {
       $section_id = $req["params"]["id"];
 
-      QueryBuilder::table("Categories")
-        ->where("section_id", "=", $section_id)
-        ->delete();
+      self::deleteSectionProducts($section_id);
       QueryBuilder::table("Sections")
         ->where("id", "=", $section_id)
         ->delete();
 
       return $res;
+    }
+
+    private static function deleteSectionProducts(int $section_id) {
+      $categories = QueryBuilder::table("Categories")
+        ->where("section_id", "=", $section_id)
+        ->get();
+
+      foreach ($categories as $category) {
+        QueryBuilder::table("Properties")
+          ->where("category_id", "=", $category["id"])
+          ->delete();
+
+        $products = QueryBuilder::table("Products")
+          ->where("category_id", "=", $category["id"])
+          ->get();
+
+        foreach ($products as $product) {
+          QueryBuilder::table("Product_property_values")
+            ->where("product_code", "=", $product["code"])
+            ->delete();
+          QueryBuilder::table("Visited_products")
+            ->where("product_code", "=", $product["code"])
+            ->delete();
+        }
+
+        QueryBuilder::table("Products")
+          ->where("category_id", "=", $category["id"])
+          ->delete();
+      }
+
+      QueryBuilder::table("Categories")
+        ->where("section_id", "=", $section_id)
+        ->delete();
     }
   }

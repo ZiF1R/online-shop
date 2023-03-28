@@ -22,6 +22,8 @@
           <template v-for="field in listActiveActions[i]?.additionalFields" :key="field.id">
             <CustomInput v-bind="field" v-model="field.value" />
           </template>
+          <span class="error">{{listActiveActions[i].errorMessage}}</span>
+
           <button @click="item.handler(i)">Подтвердить</button>
         </div>
       </div>
@@ -96,6 +98,7 @@ const list = ref([
       {
         value: "add",
         name: "Добавить",
+        errorMessage: "",
         fields: [
           {
             id: 1,
@@ -107,6 +110,7 @@ const list = ref([
       {
         value: "delete",
         name: "Удалить",
+        errorMessage: "",
         fields: [
           {
             id: 1,
@@ -123,15 +127,23 @@ const list = ref([
       const action = listActiveActions.value[i];
       if (action.value === "add") {
         const name = action.fields[0].value;
+        if (!name) {
+          listActiveActions.value[i].errorMessage = "Заполните все поля";
+          return;
+        }
         await createSection(name);
-        await fetchSections();
+        router.go(0);
       } else {
-        const id = action.fields[0].value.id;
+        const id = action.fields[0].value?.id;
+        if (!id) {
+          listActiveActions.value[i].errorMessage = "Заполните все поля";
+          return;
+        }
         openModal.value = true;
         modalAction.value = async () => {
           await deleteSection(+id);
-          await fetchSections();
           openModal.value = false;
+          router.go(0);
         };
       }
     },
@@ -142,6 +154,7 @@ const list = ref([
       {
         value: "add",
         name: "Добавить",
+        errorMessage: "",
         fields: [
           {
             id: 1,
@@ -161,6 +174,7 @@ const list = ref([
       {
         value: "delete",
         name: "Удалить",
+        errorMessage: "",
         fields: [
           {
             id: 1,
@@ -176,17 +190,29 @@ const list = ref([
     handler: async (i: number) => {
       const action = listActiveActions.value[i];
       if (action.value === "add") {
-        const section_id = action.fields[0].value.id;
+        const section_id = action.fields[0].value?.id;
         const name = action.fields[1].value;
+
+        if (!section_id || !name) {
+          listActiveActions.value[i].errorMessage = "Заполните все поля";
+          return;
+        }
+
         await createCategory(+section_id, name);
-        await fetchCategories();
+        router.go(0);
       } else {
-        const id = action.fields[0].value.id;
+        const id = action.fields[0].value?.id;
+
+        if (!id) {
+          listActiveActions.value[i].errorMessage = "Заполните все поля";
+          return;
+        }
+
         openModal.value = true;
         modalAction.value = async () => {
           await deleteCategory(+id);
-          await fetchCategories();
           openModal.value = false;
+          router.go(0);
         };
       }
     },
@@ -198,6 +224,7 @@ const list = ref([
         value: "add",
         name: "Добавить",
         additionalFields: [],
+        errorMessage: "",
         fields: [
           {
             id: 1,
@@ -261,7 +288,7 @@ const list = ref([
           },
           {
             id: 7,
-            placeholder: "Ссылка на фото",
+            placeholder: "*Ссылка на фото",
             value: "",
             column: "photo_link",
           },
@@ -270,6 +297,7 @@ const list = ref([
       {
         value: "delete",
         name: "Удалить",
+        errorMessage: "",
         fields: [
           {
             id: 2,
@@ -292,6 +320,11 @@ const list = ref([
         const description = action.fields[5].value || null;
         const count = 100;
         const photo_link = action.fields[6].value;
+
+        if (!name || !code || !category_id || !brand_id || !price) {
+          listActiveActions.value[i].errorMessage = "Заполните все поля";
+          return;
+        }
 
         const properties = action.additionalFields.reduce((acc, f) => {
           const prop = {
@@ -317,12 +350,20 @@ const list = ref([
         }
 
         await createProduct(data);
+        router.go(0);
       } else {
         const code = +action.fields[0].value;
+
+        if (!code) {
+          listActiveActions.value[i].errorMessage = "Заполните все поля";
+          return;
+        }
+
         openModal.value = true;
         modalAction.value = async () => {
           await deleteProduct(code);
           openModal.value = false;
+          router.go(0);
         };
       }
     }
@@ -341,6 +382,10 @@ async function getProperties(category_id: number): Promise<[{}]> {
 </script>
 
 <style scoped lang="scss">
+.error {
+  color: coral;
+}
+
 h1 {
   margin-bottom: 20px;
 }

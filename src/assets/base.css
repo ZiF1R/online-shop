@@ -38,10 +38,12 @@
   --background-primary: #F7F7F7;
 
   --color-danger: #E85053;
+  --color-danger-blind: rgba(232, 80, 83, 0.10);
   --color-danger-hover: #e85a5d;
   --color-danger-active: #e0484b;
 
   --color-primary: #FFA726;
+  --color-primary-blind: rgba(255, 167, 38, 0.15);
   --color-primary-hover: #ffb147;
   --color-primary-active: #ffaa37;
 

@@ -1,7 +1,9 @@
 <template>
   <teleport to="#header">
     <div class="container">
-      <slot></slot>
+      <div class="content">
+        <slot></slot>
+      </div>
       <div class="overlay" @click="emit('onClose')"></div>
     </div>
   </teleport>
@@ -11,7 +13,7 @@
 const emit = defineEmits(["onClose"]);
 </script>
 
-<style>
+<style scoped>
 .container {
   position: fixed;
   background: #ffffff;
@@ -19,7 +21,12 @@ const emit = defineEmits(["onClose"]);
   width: 100%;
   z-index: 21;
   top: 200px;
+}
+
+.content {
   overflow-y: scroll;
+  height: fit-content;
+  max-height: 60vh;
 }
 
 .overlay {

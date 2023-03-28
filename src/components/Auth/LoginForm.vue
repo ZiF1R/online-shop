@@ -5,8 +5,8 @@
     </template>
     <template #content>
       <form @submit.prevent="login">
-        <CustomInput type="email" placeholder="Почта" v-model="formData.email" required />
-        <CustomInput type="password" placeholder="Пароль" v-model="formData.password" required />
+        <CustomInput type="email" placeholder="Почта" v-model.trim="formData.email" required />
+        <CustomInput type="password" placeholder="Пароль" v-model.trim="formData.password" required />
         <span class="error">{{errorMessage}}</span>
 
         <button type="submit">Войти</button>

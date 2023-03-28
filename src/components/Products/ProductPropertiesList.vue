@@ -1,6 +1,6 @@
 <template>
   <ul class="item__properties">
-    <li class="property" v-for="property in properties.slice(0, 5)" :key="property.name">
+    <li class="property" v-for="property in properties.slice(0, limit || properties.length)" :key="property.name">
       <span class="property__name">{{property.name}}</span>
       <span class="property__value">
         {{property.value}} {{property.designation}}
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps(["properties"]);
+const props = defineProps(["properties", "limit"]);
 </script>
 
 <style scoped>

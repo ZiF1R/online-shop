@@ -9,9 +9,12 @@
 
   //users routes
   Route::get("/users", "UsersController::login");
-  Route::get("/users/{id}", "UsersController::getUser");
   Route::post("/users", "UsersController::createUser");
+  Route::get("/users/{id}", "UsersController::getUser");
   Route::post("/users/{id}", "UsersController::changeUserData");
+  Route::get("/users/{id}/watched", "UsersController::getWatchedProducts");
+  Route::post("/users/{id}/watched", "UsersController::setWatchedProduct");
+  Route::delete("/users/{id}/watched", "UsersController::removeWatchedProduct");
 
   // sections routes
   Route::get("/sections", "SectionsController::getAllSections");
