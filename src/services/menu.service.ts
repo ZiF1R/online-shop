@@ -1,33 +1,53 @@
 import axios from "axios";
 import type { Menu, Section } from "@/types/menu.types";
 
-export const test = async () => {
-  const obj = { name: "newSection" };
-  // const request = axios.post("/sections", JSON.stringify(obj));
-  const request = axios.get("/products?search=Ламинат");
-  // const request = axios.get("/sections/11");
-  // const request = axios.get("/sections");
-  return await request;
-};
+export const createSection = async (name: string) => {
+  const response = await axios.post(`/sections`, JSON.stringify({name}));
+  return response.data?.section;
+}
+
+export const createCategory = async (section_id: number, name: string) => {
+  const response = await axios.post(`/categories`, JSON.stringify({section_id, name}));
+  return response.data?.category;
+}
+
+export const deleteSection = async (id: number) => {
+  await axios.delete(`/sections`, { data: JSON.stringify({id})});
+}
+
+export const deleteCategory = async (id: number) => {
+  await axios.delete(`/categories`, { data: JSON.stringify({id})});
+}
 
 export const getSectionCategories = async (id: number) => {
-  return await axios.get(`/sections/${id}/categories`);
+  const response = await axios.get(`/sections/${id}/categories`);
+  return response.data.categories;
 };
 
+export const getAllBrands = async () => {
+  const response = await axios.get(`/brands`);
+  return response.data.brands;
+}
+
+export const getSection = async (id: number) => {
+  const response = await axios.get("/sections/" + id);
+  return response.data.section;
+}
+
 export const getAllSections = async () => {
-  return await axios.get("/sections");
+  const response = await axios.get("/sections");
+  return response.data.sections;
 };
 
 export const getMenu = async (): Promise<Menu> => {
-  const response = await getAllSections();
-  const sections: Array<Section> = response.data.sections;
+  const sections: Array<Section> = await getAllSections();
 
   const result: Menu = [];
   for (const section of sections) {
-    const categoriesResponse = await getSectionCategories(+section.id);
+    const categories = await getSectionCategories(+section.id);
     result.push({
-      name: section.name,
-      categories: categoriesResponse.data.categories,
+      section,
+      categories,
     });
   }
 

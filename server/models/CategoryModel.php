@@ -1,5 +1,5 @@
 <?php
-  class CategoryModel extends BaseModel implements IModel
+  class CategoryModel implements IModel
   {
     public static string $tableName = "Categories";
     private int $id;
@@ -7,15 +7,15 @@
     private string $name;
 
     public static function find(array $conditions, ?array $joinConditions = null): array|null {
-      return parent::_find(self::$tableName, $conditions, $joinConditions);
+      return DatabaseController::find(self::$tableName, $conditions, $joinConditions);
     }
 
     public static function findOne(array $conditions, ?array $joinConditions = null): array|null {
-      return parent::_findOne(self::$tableName, $conditions, $joinConditions);
+      return DatabaseController::findOne(self::$tableName, $conditions, $joinConditions);
     }
 
     public static function findAll(): array {
-      return parent::_findAll(self::$tableName);
+      return DatabaseController::findAll(self::$tableName);
     }
 
     public function __construct(int $section_id, string $name)

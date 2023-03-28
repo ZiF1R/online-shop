@@ -1,39 +1,32 @@
 <template>
-  <app-menu />
-  <br />
-  <app-search />
+  <AppBar />
+  <AppHeader />
+  <BreadCrumbs />
+  <router-view />
 </template>
 
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import AppMenu from "@/components/AppMenu.vue";
-import { onBeforeMount, reactive, ref } from "vue";
-import { test } from "@/services/menu.service";
-import AppSearch from "@/components/AppSearch.vue";
-let data = ref();
-
-onBeforeMount(async () => {
-  // data.value = await test();
-  // console.log(data.value);
-});
+import { RouterView } from "vue-router";
+import AppHeader from "components/AppHeader.vue";
+import BreadCrumbs from "components/BreadCrumbs.vue";
+import AppBar from "components/AppBar.vue";
 </script>
 
 <style>
 header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+  display: flex;
+  position: relative;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+  line-height: 1.5;
 }
 
 nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-top: 2rem;
 }
 
 nav a.router-link-exact-active {
@@ -52,32 +45,5 @@ nav a {
 
 nav a:first-of-type {
   border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
 }
 </style>

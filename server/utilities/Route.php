@@ -24,17 +24,25 @@
       if (!isset($_GET["request_url"])) {
         exit();
       }
-
       $url = $_GET["request_url"];
       $splittedRoute = array_slice(explode("/", $route), 1);
       $splittedUrl = array_slice(explode("/", $url), 1);
 
+      if (str_starts_with($_GET["request_url"], "/products/") && str_contains($_GET["request_url"], "?product=") && $route === "/products/{code}") {
+        $len = count($splittedUrl) - 1;
+        $splittedUrl[$len - 1] .= $splittedUrl[$len];
+        $splittedUrl = array_slice($splittedUrl, $len - 1);
+      }
       if (count($splittedUrl) !== count($splittedRoute)) {
         return null;
       }
 
       $queryParams = self::getUrlSearchParams($url);
       $_GET = array_merge($_GET, $queryParams);
+
+      if (str_starts_with($_GET["request_url"], "/products/") && str_contains($_GET["request_url"], "?product=") && $route === "/products/{code}") {
+        return [];
+      }
 
       $params = [];
       foreach ($splittedRoute as $i => $value) {
@@ -68,19 +76,20 @@
       return $result;
     }
 
-    private static function executeCallback(string $route, string $callback): void {
+    private static function executeCallback(string $route, string $callback, $_PUT = [], $_DELETE = []): void {
       $res = [];
       $req = [
-        "params" => array_merge(self::getRouteParams($route), $_GET, $_POST)
+        "params" => array_merge(self::getRouteParams($route), $_GET, $_POST, $_DELETE, $_PUT)
       ];
 
       list($class, $method) = explode("::", $callback);
       include "./controllers/{$class}.php";
       echo json_encode(call_user_func_array([$class, $method], [$req, $res]), JSON_UNESCAPED_UNICODE);
+      die();
     }
 
     public static function get(string $route, string $callback): void {
-      if (!self::isMatchRoute($route) || count($_POST) > 0) {
+      if ($_SERVER['REQUEST_METHOD'] !== 'GET' || !self::isMatchRoute($route) || count($_POST) > 0) {
         return;
       }
 
@@ -92,14 +101,19 @@
         return;
       }
 
-      foreach ($_POST as $obj => $v) {
+      $_POST = self::parsePostedData($_POST);
+      self::executeCallback($route, $callback);
+    }
+
+    private static function parsePostedData($data) {
+      foreach ($data as $obj => $v) {
         foreach (json_decode($obj) as $key => $value) {
-          $_POST[$key] = $value;
+          $data[$key] = $value;
         }
-        unset($_POST[$obj]);
+        unset($data[$obj]);
       }
 
-      self::executeCallback($route, $callback);
+      return $data;
     }
 
     public static function put(string $route, string $callback): void {
@@ -108,14 +122,16 @@
         return;
       }
 
-      self::executeCallback($route, $callback);
+      self::executeCallback($route, $callback, $_PUT=$_PUT);
     }
 
     public static function delete(string $route, string $callback): void {
+      parse_str(file_get_contents('php://input'), $_DELETE);
       if ($_SERVER['REQUEST_METHOD'] !== 'DELETE' || !self::isMatchRoute($route)) {
         return;
       }
 
-      self::executeCallback($route, $callback);
+      $_DELETE = self::parsePostedData($_DELETE);
+      self::executeCallback($route, $callback, $_DELETE=$_DELETE);
     }
   }

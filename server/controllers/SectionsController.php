@@ -5,29 +5,26 @@
   class SectionsController
   {
     public static function getAllSections(array $req, array $res): array {
-      $res["sections"] = SectionModel::findAll();
+      $res["sections"] = QueryBuilder::table("Sections")->get();
       return $res;
     }
 
     public static function getSection(array $req, array $res): array {
-      $id = (int) $req["params"]["id"];
+      $id = $req["params"]["id"];
 
-      if ($id === null) {
-        return $res;
-      }
+      $res["section"] = QueryBuilder::table("Sections")
+        ->where("id", "=", $id)
+        ->get()[0];
 
-      $res["section"] = SectionModel::findOne(["id" => $id]);
       return $res;
     }
 
     public static function getSectionCategories(array $req, array $res): array {
       $section_id = (int) $req["params"]["section_id"];
 
-      if (!isset($section_id)) {
-        return $res;
-      }
-
-      $res["categories"] = CategoryModel::find(["section_id" => $section_id]);
+      $res["categories"] = QueryBuilder::table("Categories")
+        ->where("section_id", "=", $section_id)
+        ->get();
       return $res;
     }
 
@@ -38,8 +35,25 @@
         return $res;
       }
 
-      $section = SectionModel::create($name);
-      $res["section"] = $section->getSectionObject();
+      QueryBuilder::table("Sections")->insert([
+        ["name" => $name]
+      ]);
+      $res["section"] = QueryBuilder::table("Sections")
+        ->where("name", "=", $name)
+        ->get();
+
+      return $res;
+    }
+
+    public static function deleteSection(array $req, array $res): array {
+      $section_id = $req["params"]["id"];
+
+      QueryBuilder::table("Categories")
+        ->where("section_id", "=", $section_id)
+        ->delete();
+      QueryBuilder::table("Sections")
+        ->where("id", "=", $section_id)
+        ->delete();
 
       return $res;
     }

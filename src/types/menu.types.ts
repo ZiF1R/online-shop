@@ -7,4 +7,4 @@ export type Category = {
   section_id: number;
   name: string;
 };
-export type Menu = Array<{ name: string; categories: Array<Category> }>;
+export type Menu = Array<{ section: Section; categories: Array<Category> }>;
